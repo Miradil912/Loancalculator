@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Calculator Pro | All-in-One Financial Tools</title>
+    <!-- Google AdSense Code -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1234567890123456" crossorigin="anonymous"></script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #27ae60;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --radius: 8px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .financial-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .tab-navigation {
+            display: flex;
+            background: var(--dark);
+            overflow-x: auto;
+        }
+        
+        .tab-button {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .tab-button:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .tab-button.active {
+            background: var(--secondary);
+        }
+        
+        .calculator-section {
+            display: none;
+            padding: 2rem;
+        }
+        
+        .calculator-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        input, select {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border 0.3s ease;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.3s ease;
+            grid-column: 1 / -1;
+            justify-self: start;
+        }
+        
+        .btn:hover {
+            background: #219653;
+        }
+        
+        .results {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: var(--light);
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .results.active {
+            display: block;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .debt-item {
+            background: var(--light);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .debt-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .remove-debt {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+        
+        .add-debt-btn {
+            background: var(--secondary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .calculator-links {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px dashed #aaa;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .calculator-link {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .calculator-link:hover {
+            text-decoration: underline;
+        }
+        
+        .ad-container {
+            background-color: #f9f9f9;
+            border: 1px dashed #ccc;
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+            margin: 2rem 0;
+            color: #666;
+        }
+        
+        .ad-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+        
+        @media (max-width: 768px) {
+            .tab-navigation {
+                flex-direction: column;
+            }
+            
+            .tab-button {
+                border-radius: var(--radius);
+                margin-bottom: 5px;
+            }
+            
+            .calculator-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .calculator-links {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- AdSense Top Banner -->
+    <div class="ad-container">
+        <div class="ad-label">Advertisement</div>
+        <!-- AdSense Code -->
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-1234567890123456"
+             data-ad-slot="1234567890"
+             data-ad-format="auto"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+
+    <div class="financial-container">
+        <header>
+            <h1>Financial Calculator Pro</h1>
+            <p>All-in-one financial planning tools</p>
+        </header>
+        
+        <div class="tab-navigation">
+            <button class="tab-button active" data-tab="loan-calculator">Loan Calculator</button>
+            <button class="tab-button" data-tab="debt-calculator">Debt Payoff</button>
+            <button class="tab-button" data-tab="investment-calculator">Investment Growth</button>
+            <button class="tab-button" data-tab="savings-calculator">Savings Calculator</button>
+            <button class="tab-button" data-tab="mortgage-calculator">Mortgage Calculator</button>
+        </div>
+        
+        <!-- Loan Calculator -->
+        <section id="loan-calculator" class="calculator-section active">
+            <h2>Loan Calculator</h2>
+            <p>Calculate your monthly payment, total interest, and total payment for an amortized loan.</p>
+            
+            <form class="calculator-grid" id="loan-form">
+                <div class="form-group">
+                    <label for="loan-amount">Loan Amount ($)</label>
+                    <input type="number" id="loan-amount" min="0" step="100" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="loan-term">Loan Term (Years)</label>
+                    <input type="number" id="loan-term" min="1" max="50" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="interest-rate">Annual Interest Rate (%)</label>
+                    <input type="number" id="interest-rate" min="0" max="50" step="0.01" required>
+                </div>
+                
+                <button type="submit" class="btn">Calculate Loan</button>
+            </form>
+            
+            <div id="loan-results" class="results">
+                <h3>Loan Calculation Results</h3>
+                <div class="result-item">
+                    <span>Monthly Payment:</span>
+                    <span id="monthly-payment">$0.00</span>
+                </div>
+                <div class="result-item">
+                    <span>Total Interest Paid:</span>
+                    <span id="total-interest">$0.00</span>
+                </div>
+                <div class="result-item">
+                    <span>Total Payment:</span>
+                    <span id="total-payment">$0.00</span>
+                </div>
+                
+                <div class="calculator-links">
+                    <span>Also check:</span>
+                    <a href="#" class="calculator-link" data-tab="debt-calculator">Debt Payoff Calculator</a>
+                    <a href="#" class="calculator-link" data-tab="mortgage-calculator">Mortgage Calculator</a>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Debt Payoff Calculator -->
+        <section id="debt-calculator" class="calculator-section">
+            <h2>Debt Payoff Calculator (Snowball Method)</h2>
+            <p>Pay off your debts from smallest to largest balance to build momentum.</p>
+            
+            <button type="button" class="btn add-debt-btn" id="add-debt">Add Debt</button>
+            
+            <div class="debt-list" id="debt-list">
+                <div class="debt-item">
+                    <div class="debt-item-header">
+                        <h3>Debt #1</h3>
+                        <button type="button" class="remove-debt">×</button>
+                    </div>
+                    <div class="calculator-grid">
+                        <div class="form-group">
+                            <label>Debt Name</label>
+                            <input type="text" class="debt-name" value="Credit Card">
+                        </div>
+                        <div class="form-group">
+                            <label>Balance ($)</label>
+                            <input type="number" class="debt-balance" min="0" step="100" value="5000">
+                        </div>
+                        <div class="form-group">
+                            <label>Interest Rate (%)</label>
+                            <input type="number" class="debt-rate" min="0" max="50" step="0.01" value="18.99">
+                        </div>
+                        <div class="form-group">
+                            <label>Minimum Payment ($)</label>
+                            <input type="number" class="debt-min-payment" min="0" step="10" value="200">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <form class="calculator-grid" id="debt-form">
+                <div class="form-group">
+                    <label for="monthly-payment-budget">Total Monthly Debt Payment Budget ($)</label>
+                    <input type="number" id="monthly-payment-budget" min="0" step="10" required>
+                </div>
+                
+                <button type="submit" class="btn">Calculate Payoff Plan</button>
+            </form>
+            
+            <!-- AdSense Medium Rectangle -->
+            <div class="ad-container">
+                <div class="ad-label">Advertisement</div>
+                <!-- AdSense Code -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-format="fluid"
+                     data-ad-layout="in-article"
+                     data-ad-client="ca-pub-1234567890123456"
+                     data-ad-slot="0987654321"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+            
+            <div id="debt-results" class="results">
+                <h3>Debt Payoff Results</h3>
+                <div id="payoff-timeline"></div>
+                <div class="result-item">
+                    <span>Debt-Free Date:</span>
+                    <span id="debt-free-date">-</span>
+                </div>
+                <div class="result-item">
+                    <span>Total Interest Paid:</span>
+                    <span id="total-debt-interest">$0.00</span>
+                </div>
+                
+                <div class="calculator-links">
+                    <span>Also check:</span>
+                    <a href="#" class="calculator-link" data-tab="loan-calculator">Loan Calculator</a>
+                    <a href="#" class="calculator-link" data-tab="investment-calculator">Investment Calculator</a>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Investment Growth Calculator -->
+        <section id="investment-calculator" class="calculator-section">
+            <h2>Investment Growth Calculator</h2>
+            <p>Project the future value of your investments with regular contributions.</p>
+            
+            <form class="calculator-grid" id="investment-form">
+                <div class="form-group">
+                    <label for="initial-investment">Initial Investment ($)</label>
+                    <input type="number" id="initial-investment" min="0" step="100" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="monthly-contribution">Monthly Contribution ($)</label>
+                    <input type="number" id="monthly-contribution" min="0" step="50" value="100">
+                </div>
+                
+                <div class="form-group">
+                    <label for="investment-term">Investment Term (Years)</label>
+                    <input type="number" id="investment-term" min="1" max="100" value="20" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="expected-return">Expected Annual Return (%)</label>
+                    <input type="number" id="expected-return" min="0" max="50" step="0.1" value="7" required>
+                </div>
+                
+                <button type="submit" class="btn">Calculate Growth</button>
+            </form>
+            
+            <div id="investment-results" class="results">
+                <h3>Investment Projection</h3>
+                <div class="result-item">
+                    <span>Future Value:</span>
+                    <span id="future-value">$0.00</span>
+                </div>
+                <div class="result-item">
+                    <span>Total Contributions:</span>
+                    <span id="total-contributions">$0.00</span>
+                </div>
+                <div class="result-item">
+                    <span>Interest Earned:</span>
+                    <span id="interest-earned">$0.00</span>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Additional calculator sections -->
+        <section id="savings-calculator" class="calculator-section">
+            <h2>Savings Calculator</h2>
+            <p>Calculate how your savings will grow over time with compound interest.</p>
+            
+            <form class="calculator-grid" id="savings-form">
+                <div class="form-group">
+                    <label for="initial-savings">Initial Savings ($)</label>
+                    <input type="number" id="initial-savings" min="0" step="100" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="monthly-saving">Monthly Saving ($)</label>
+                    <input type="number" id="monthly-saving" min="0" step="50" value="200">
+                </div>
+                
+                <div class="form-group">
+                    <label for="saving-term">Saving Term (Years)</label>
+                    <input type="number" id="saving-term" min="1" max="50" value="10" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="savings-rate">Annual Interest Rate (%)</label>
+                    <input type="number" id="savings-rate" min="0" max="50" step="0.1" value="3" required>
+                </div>
+                
+                <button type="submit" class="btn">Calculate Savings</button>
+            </form>
+            
+            <div id="savings-results" class="results">
+                <h3>Savings Projection</h3>
+                <div class="result-item">
+                    <span>Future Value:</span>
+                    <span id="savings-future-value">$0.00</span>
+                </div>
+                <div class="result-item">
+                    <span>Total Deposits:</span>
+                    <span id="total-deposits">$0.00</span>
+                </div>
+                <div class="result-item">
+                    <span>Interest Earned:</span>
+                    <span id="savings-interest">$0.00</span>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Mortgage Calculator -->
+        <section id="mortgage-calculator" class="calculator-section">
+            <h2>Mortgage Calculator</h2>
+            <p>Calculate your monthly mortgage payment and total mortgage cost.</p>
+            
+            <form class="calculator-grid" id="mortgage-form">
+                <div class="form-group">
+                    <label for="mortgage-amount">Mortgage Amount ($)</label>
+                    <input type="number" id="mortgage-amount" min="0" step="1000" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="mortgage-term">Mortgage Term (Years)</label>
+                    <input type="number" id="mortgage-term" min="1" max="40" value="30" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="mortgage-rate">Interest Rate (%)</label>
+                    <input type="number" id="mortgage-rate" min="0" max="20" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="property-tax">Annual Property Tax ($)</label>
+                    <input type="number" id="property-tax" min="0" step="100" value="2400">
+                </div>
+                
+                <div class="form-group">
+                    <label for="home-insurance">Annual Home Insurance ($)</label>
+                    <input type="number" id="home-insurance" min="0" step="100" value="1200">
+                </div>
+                
+                <button type="submit" class="btn">Calculate Mortgage</button>
+            </form>
+            
+            <!-- AdSense Bottom Banner -->
+            <div class="ad-container">
+                <div class="ad-label">Advertisement</div>
+                <!-- AdSense Code -->
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-1234567890123456"
+                     data-ad-slot="1234567890"
+                     data-ad-format="auto"></ins>
+                <script>
+                     (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+            
+            <div id="mortgage-results" class="results">
+                <h3>Mortgage Calculation Results</h3>
+                <div class="result-item">
+                    <span>Monthly Payment (P&I):</span>
+                    <span id="mortgage-payment">$0.00</span>
+                </div>
+                <div class="result-item">
+                    <span>Total Monthly Payment:</span>
+                    <span id="total-monthly-payment">$0.00</span>
+                </div>
+                <div class="result-item">
+                    <span>Total Interest Paid:</span>
+                    <span id="total-mortgage-interest">$0.00</span>
+                </div>
+                <div class="result-item">
+                    <span>Total Mortgage Cost:</span>
+                    <span id="total-mortgage-cost">$0.00</span>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Prevent form submission and page refresh
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+            });
+        });
+
+        // Tab Navigation
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.calculator-section').forEach(section => section.classList.remove('active'));
+                
+                button.classList.add('active');
+                const tabId = button.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Internal Calculator Links
+        document.querySelectorAll('.calculator-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const tabId = link.getAttribute('data-tab');
+                
+                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.calculator-section').forEach(section => section.classList.remove('active'));
+                
+                document.querySelector(`.tab-button[data-tab="${tabId}"]`).classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Loan Calculator Functionality
+        document.getElementById('loan-form').addEventListener('submit', function() {
+            const amount = parseFloat(document.getElementById('loan-amount').value);
+            const termYears = parseFloat(document.getElementById('loan-term').value);
+            const annualRate = parseFloat(document.getElementById('interest-rate').value);
+            
+            const termMonths = termYears * 12;
+            const monthlyRate = annualRate / 100 / 12;
+            
+            // Calculate monthly payment using amortization formula
+            const monthlyPayment = monthlyRate > 0 
+                ? (amount * monthlyRate * Math.pow(1 + monthlyRate, termMonths)) / 
+                  (Math.pow(1 + monthlyRate, termMonths) - 1)
+                : amount / termMonths;
+                
+            const totalPayment = monthlyPayment * termMonths;
+            const totalInterest = totalPayment - amount;
+            
+            // Display results
+            document.getElementById('monthly-payment').textContent = `$${monthlyPayment.toFixed(2)}`;
+            document.getElementById('total-interest').textContent = `$${totalInterest.toFixed(2)}`;
+            document.getElementById('total-payment').textContent = `$${totalPayment.toFixed(2)}`;
+            document.getElementById('loan-results').classList.add('active');
+        });
+
+        // Debt Calculator - Add/Remove Debts
+        let debtCount = 1;
+        
+        document.getElementById('add-debt').addEventListener('click', function() {
+            debtCount++;
+            const debtList = document.getElementById('debt-list');
+            const newDebt = document.createElement('div');
+            newDebt.className = 'debt-item';
+            newDebt.innerHTML = `
+                <div class="debt-item-header">
+                    <h3>Debt #${debtCount}</h3>
+                    <button type="button" class="remove-debt">×</button>
+                </div>
+                <div class="calculator-grid">
+                    <div class="form-group">
+                        <label>Debt Name</label>
+                        <input type="text" class="debt-name" value="Debt ${debtCount}">
+                    </div>
+                    <div class="form-group">
+                        <label>Balance ($)</label>
+                        <input type="number" class="debt-balance" min="0" step="100" value="3000">
+                    </div>
+                    <div class="form-group">
+                        <label>Interest Rate (%)</label>
+                        <input type="number" class="debt-rate" min="0" max="50" step="0.01" value="7.5">
+                    </div>
+                    <div class="form-group">
+                        <label>Minimum Payment ($)</label>
+                        <input type="number" class="debt-min-payment" min="0" step="10" value="150">
+                    </div>
+                </div>
+            `;
+            debtList.appendChild(newDebt);
+            
+            // Add event listener to the new remove button
+            newDebt.querySelector('.remove-debt').addEventListener('click', function() {
+                if (document.querySelectorAll('.debt-item').length > 1) {
+                    debtList.removeChild(newDebt);
+                } else {
+                    alert('You need at least one debt for the calculator.');
+                }
+            });
+        });
+        
+        // Add event listeners to initial remove buttons
+        document.querySelectorAll('.remove-debt').forEach(button => {
+            button.addEventListener('click', function() {
+                if (document.querySelectorAll('.debt-item').length > 1) {
+                    this.closest('.debt-item').remove();
+                } else {
+                    alert('You need at least one debt for the calculator.');
+                }
+            });
+        });
+
+        // Debt Payoff Calculation
+        document.getElementById('debt-form').addEventListener('submit', function() {
+            const monthlyBudget = parseFloat(document.getElementById('monthly-payment-budget').value);
+            const debtItems = document.querySelectorAll('.debt-item');
+            const debts = [];
+            
+            // Collect debt data
+            debtItems.forEach(item => {
+                const debt = {
+                    name: item.querySelector('.debt-name').value,
+                    balance: parseFloat(item.querySelector('.debt-balance').value),
+                    rate: parseFloat(item.querySelector('.debt-rate').value),
+                    minPayment: parseFloat(item.querySelector('.debt-min-payment').value)
+                };
+                debts.push(debt);
+            });
+            
+            // Sort debts by balance (snowball method)
+            debts.sort((a, b) => a.balance - b.balance);
+            
+            // Simplified payoff calculation
+            const totalMinPayments = debts.reduce((sum, debt) => sum + debt.minPayment, 0);
+            
+            if (monthlyBudget < totalMinPayments) {
+                alert(`Your monthly budget ($${monthlyBudget}) is less than the total minimum payments ($${totalMinPayments.toFixed(2)}). Please increase your budget.`);
+                return;
+            }
+            
+            // Calculate debt-free date (simplified)
+            const today = new Date();
+            const debtFreeDate = new Date(today);
+            debtFreeDate.setMonth(debtFreeDate.getMonth() + 24); // Simplified 2-year estimate
+            
+            // Display results
+            document.getElementById('debt-free-date').textContent = debtFreeDate.toLocaleDateString();
+            document.getElementById('total-debt-interest').textContent = `$${(monthlyBudget * 24 * 0.3).toFixed(2)}`; // Simplified
+            
+            // Generate payoff timeline
+            const timeline = document.getElementById('payoff-timeline');
+            timeline.innerHTML = '<h4>Payoff Order (Snowball Method)</h4>';
+            
+            debts.forEach((debt, index) => {
+                const debtElement = document.createElement('div');
+                debtElement.className = 'result-item';
+                debtElement.innerHTML = `
+                    <span>${index + 1}. ${debt.name}</span>
+                    <span>$${debt.balance.toFixed(2)}</span>
+                `;
+                timeline.appendChild(debtElement);
+            });
+            
+            document.getElementById('debt-results').classList.add('active');
+        });
+
+        // Investment Growth Calculator
+        document.getElementById('investment-form').addEventListener('submit', function() {
+            const initialInvestment = parseFloat(document.getElementById('initial-investment').value);
+            const monthlyContribution = parseFloat(document.getElementById('monthly-contribution').value);
+            const investmentTerm = parseFloat(document.getElementById('investment-term').value);
+            const expectedReturn = parseFloat(document.getElementById('expected-return').value);
+            
+            const monthlyRate = expectedReturn / 100 / 12;
+            const months = investmentTerm * 12;
+            
+            // Calculate future value of initial investment
+            const futureValueInitial = initialInvestment * Math.pow(1 + monthlyRate, months);
+            
+            // Calculate future value of monthly contributions
+            const futureValueContributions = monthlyContribution * 
+                (Math.pow(1 + monthlyRate, months) - 1) / monthlyRate;
+            
+            const futureValue = futureValueInitial + futureValueContributions;
+            const totalContributions = initialInvestment + (monthlyContribution * months);
+            const interestEarned = futureValue - totalContributions;
+            
+            // Display results
+            document.getElementById('future-value').textContent = `$${futureValue.toFixed(2)}`;
+            document.getElementById('total-contributions').textContent = `$${totalContributions.toFixed(2)}`;
+            document.getElementById('interest-earned').textContent = `$${interestEarned.toFixed(2)}`;
+            document.getElementById('investment-results').classList.add('active');
+        });
+
+        // Savings Calculator
+        document.getElementById('savings-form').addEventListener('submit', function() {
+            const initialSavings = parseFloat(document.getElementById('initial-savings').value);
+            const monthlySaving = parseFloat(document.getElementById('monthly-saving').value);
+            const savingTerm = parseFloat(document.getElementById('saving-term').value);
+            const savingsRate = parseFloat(document.getElementById('savings-rate').value);
+            
+            const monthlyRate = savingsRate / 100 / 12;
+            const months = savingTerm * 12;
+            
+            // Calculate future value
+            const futureValueInitial = initialSavings * Math.pow(1 + monthlyRate, months);
+            const futureValueContributions = monthlySaving * 
+                (Math.pow(1 + monthlyRate, months) - 1) / monthlyRate;
+            
+            const futureValue = futureValueInitial + futureValueContributions;
+            const totalDeposits = initialSavings + (monthlySaving * months);
+            const interestEarned = futureValue - totalDeposits;
+            
+            // Display results
+            document.getElementById('savings-future-value').textContent = `$${futureValue.toFixed(2)}`;
+            document.getElementById('total-deposits').textContent = `$${totalDeposits.toFixed(2)}`;
+            document.getElementById('savings-interest').textContent = `$${interestEarned.toFixed(2)}`;
+            document.getElementById('savings-results').classList.add('active');
+        });
+
+        // Mortgage Calculator
+        document.getElementById('mortgage-form').addEventListener('submit', function() {
+            const mortgageAmount = parseFloat(document.getElementById('mortgage-amount').value);
+            const mortgageTerm = parseFloat(document.getElementById('mortgage-term').value);
+            const mortgageRate = parseFloat(document.getElementById('mortgage-rate').value);
+            const propertyTax = parseFloat(document.getElementById('property-tax').value);
+            const homeInsurance = parseFloat(document.getElementById('home-insurance').value);
+            
+            const termMonths = mortgageTerm * 12;
+            const monthlyRate = mortgageRate / 100 / 12;
+            
+            // Calculate monthly payment (P&I)
+            const monthlyPayment = monthlyRate > 0 
+                ? (mortgageAmount * monthlyRate * Math.pow(1 + monthlyRate, termMonths)) / 
+                  (Math.pow(1 + monthlyRate, termMonths) - 1)
+                : mortgageAmount / termMonths;
+            
+            // Calculate additional monthly costs
+            const monthlyTax = propertyTax / 12;
+            const monthlyInsurance = homeInsurance / 12;
+            const totalMonthlyPayment = monthlyPayment + monthlyTax + monthlyInsurance;
+            
+            const totalPayment = monthlyPayment * termMonths;
+            const totalInterest = totalPayment - mortgageAmount;
+            const totalMortgageCost = totalPayment + propertyTax * mortgageTerm + homeInsurance * mortgageTerm;
+            
+            // Display results
+            document.getElementById('mortgage-payment').textContent = `$${monthlyPayment.toFixed(2)}`;
+            document.getElementById('total-monthly-payment').textContent = `$${totalMonthlyPayment.toFixed(2)}`;
+            document.getElementById('total-mortgage-interest').textContent = `$${totalInterest.toFixed(2)}`;
+            document.getElementById('total-mortgage-cost').textContent = `$${totalMortgageCost.toFixed(2)}`;
+            document.getElementById('mortgage-results').classList.add('active');
+        });
+
+        // Initialize with first debt removal handler
+        document.querySelector('.remove-debt').addEventListener('click', function() {
+            if (document.querySelectorAll('.debt-item').length > 1) {
+                this.closest('.debt-item').remove();
+            } else {
+                alert('You need at least one debt for the calculator.');
+            }
+        });
+    </script>
+</body>
+</html>
